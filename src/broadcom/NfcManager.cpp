@@ -132,7 +132,7 @@ bool NfcManager::initialize()
       RW_SetTraceLevel(num);
       NFA_SetTraceLevel(num);
       NFA_P2pSetTraceLevel(num);
-            
+
       sNfaEnableEvent.wait(); // Wait for NFA command to finish.
     } else {
       ALOGE("%s: NFA_Enable fail, error = 0x%X", __FUNCTION__, stat);
@@ -174,7 +174,7 @@ bool NfcManager::initialize()
   theInstance.Finalize();
 
 TheEnd:
-  if (sIsNfaEnabled) {
+  if (sIsNfaEnabled && PowerSwitch::powerManagementIsEnabled()) {
     PowerSwitch::getInstance().setLevel(PowerSwitch::LOW_POWER);
   }
 
@@ -303,7 +303,8 @@ void NfcManager::disableDiscovery()
   PeerToPeer::getInstance().enableP2pListening(false);
 
   // If nothing is active after this, then tell the controller to power down.
-  if (!(PowerSwitch::getInstance().setModeOff(PowerSwitch::DISCOVERY)))
+  if (!(PowerSwitch::getInstance().setModeOff(PowerSwitch::DISCOVERY))
+      && PowerSwitch::powerManagementIsEnabled())
     PowerSwitch::getInstance().setLevel(PowerSwitch::LOW_POWER);
 
   // We may have had RF field notifications that did not cause
@@ -339,8 +340,8 @@ ILlcpSocket* NfcManager::createLlcpSocket(int sap, int miu, int rw, int linearBu
     ALOGE("%s: fail create p2p client", __FUNCTION__);
 
   LlcpSocket* pLlcpSocket = new LlcpSocket(handle, sap, miu, rw);
-    
-  ALOGD("%s: exit", __FUNCTION__); 
+
+  ALOGD("%s: exit", __FUNCTION__);
   return static_cast<ILlcpSocket*>(pLlcpSocket);
 }
 
@@ -354,7 +355,7 @@ ILlcpServerSocket* NfcManager::createLlcpServerSocket(int sap, const char* sn, i
     ALOGE("%s: register server fail", __FUNCTION__);
     return NULL;
   }
-    
+
   ALOGD("%s: exit", __FUNCTION__);
   return static_cast<ILlcpServerSocket*>(pLlcpServiceSocket);
 }
@@ -385,7 +386,7 @@ void NfcManager::setP2pTargetModes(int modes)
   if (modes & 0x04) mask |= NFA_TECHNOLOGY_MASK_F;
   if (modes & 0x08) mask |= NFA_TECHNOLOGY_MASK_A_ACTIVE | NFA_TECHNOLOGY_MASK_F_ACTIVE;
 
-  PeerToPeer::getInstance().setP2pListenMask(mask); 
+  PeerToPeer::getInstance().setP2pListenMask(mask);
   // This function is not called by the NFC service nor exposed by public API.
 }
 
@@ -553,7 +554,7 @@ static void nfaConnectionCallback(UINT8 connEvent, tNFA_CONN_EVT_DATA* eventData
     // RF Discovery stopped event.
     case NFA_RF_DISCOVERY_STOPPED_EVT: {
       ALOGD("%s: NFA_RF_DISCOVERY_STOPPED_EVT: status = 0x%X", __FUNCTION__, eventData->status);
- 
+
       SyncEventGuard guard(sNfaEnableDisablePollingEvent);
       sNfaEnableDisablePollingEvent.notifyOne();
       break;

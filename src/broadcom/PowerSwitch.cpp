@@ -12,6 +12,7 @@
 #undef LOG_TAG
 #define LOG_TAG "BroadcomNfc"
 #include <cutils/log.h>
+#include <cutils/properties.h>
 
 void doStartupConfig();
 
@@ -35,6 +36,15 @@ PowerSwitch::~PowerSwitch()
 PowerSwitch& PowerSwitch::getInstance()
 {
   return sPowerSwitch;
+}
+
+bool PowerSwitch::powerManagementIsEnabled()
+{
+  char value[PROPERTY_VALUE_MAX];
+
+  int len = property_get("ro.moz.nfc.disable_powermgmt", value, "false");
+
+  return !(len && !strcmp(value, "true"));
 }
 
 void PowerSwitch::initialize(PowerLevel level)

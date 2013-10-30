@@ -49,7 +49,7 @@ public:
 
   /**
    * Power level is unknown.
-   */  
+   */
   static const int PLATFORM_UNKNOWN_LEVEL = 0;
   /**
    * The phone is turned OFF.
@@ -81,6 +81,13 @@ public:
    * @return Reference to this object.
    */
   static PowerSwitch& getInstance();
+
+  /**
+   * Check if power management is enabled
+   *
+   * @return True if power management is enabled (the default).
+   */
+  static bool powerManagementIsEnabled();
 
   /**
    * Initialize member variables.

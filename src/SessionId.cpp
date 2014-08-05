@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
+#include <climits>
 #include "SessionId.h"
 
 int SessionId::mId = 0;
 
 int
 SessionId::generateNewId() {
+  if (mId == INT_MAX) {
+    mId = 0;
+  }
+
   return ++mId;
 }
 

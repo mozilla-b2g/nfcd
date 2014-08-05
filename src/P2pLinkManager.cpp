@@ -16,6 +16,8 @@
 
 #include "P2pLinkManager.h"
 
+#include <cassert>
+
 #include "NdefMessage.h"
 #include "SnepMessage.h"
 #include "SnepServer.h"
@@ -119,6 +121,7 @@ P2pLinkManager::~P2pLinkManager()
 
 void P2pLinkManager::notifyNdefReceived(NdefMessage* ndef)
 {
+  assert(isLlcpActive());
   mNfcService->onP2pReceivedNdef(ndef);
 }
 

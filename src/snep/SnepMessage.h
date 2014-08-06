@@ -54,6 +54,7 @@ public:
 
   void toByteArray(std::vector<uint8_t>& buf);
 
+  static bool isValidSnepMessage(std::vector<uint8_t>& buf);
   static SnepMessage* getGetRequest(int acceptableLength, NdefMessage& ndef);
   static SnepMessage* getPutRequest(NdefMessage& ndef);
   static SnepMessage* getMessage(uint8_t field);

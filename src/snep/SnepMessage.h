@@ -60,7 +60,9 @@ public:
   static SnepMessage* getSuccessResponse(NdefMessage* ndef);
   static SnepMessage* fromByteArray(std::vector<uint8_t>& buf);
   static SnepMessage* fromByteArray(uint8_t* pBuf, int size);
+
 private:
+  static bool isValidFormat(std::vector<uint8_t>& buf);
 
   static const int HEADER_LENGTH = 6;
 

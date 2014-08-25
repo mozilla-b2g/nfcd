@@ -18,6 +18,7 @@
 #define mozilla_nfcd_DeviceHost_h
 
 #include <stdio.h>
+#include "NfcGonkMessage.h"
 
 class INfcTag;
 class IP2pDevice;
@@ -84,8 +85,17 @@ private:
 
 class TransactionEvent {
 public:
+  enum OriginType {
+    SIM, ESE, EXTERNAL, UNKNOWN
+  };
+
   TransactionEvent();
   ~TransactionEvent();
+
+  static NfcEvtTransactionOrigin convertOriginType(enum OriginType type);
+
+  OriginType originType;
+  uint32_t originNum;
 
   uint32_t aidLen;
   uint8_t* aid;

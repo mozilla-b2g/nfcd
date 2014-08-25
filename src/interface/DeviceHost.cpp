@@ -61,7 +61,9 @@ void DeviceHost::notifySeFieldDeactivated()
 }
 
 TransactionEvent::TransactionEvent()
- : aidLen(0)
+ : originType(TransactionEvent::UNKNOWN)
+ , originNum(-1)
+ , aidLen(0)
  , aid(NULL)
  , payloadLen(0)
  , payload(NULL)
@@ -72,4 +74,19 @@ TransactionEvent::~TransactionEvent()
 {
   delete aid;
   delete payload;
+}
+
+NfcEvtTransactionOrigin TransactionEvent::convertOriginType(enum OriginType type)
+{
+  switch (type) {
+    case TransactionEvent::SIM:
+      return NFC_EVT_TRANSACTION_SIM;
+    case TransactionEvent::ESE:
+      return NFC_EVT_TRANSACTION_ESE;
+    case TransactionEvent::EXTERNAL:
+      return NFC_EVT_TRANSACTION_EXTERNAL;
+    case TransactionEvent::UNKNOWN:  
+      return NFC_EVT_TRANSACTION_UNKNOWN;
+  }
+  return NFC_EVT_TRANSACTION_UNKNOWN;
 }

@@ -374,10 +374,41 @@ typedef enum {
    *
    * To notify a transaction event from secure element.
    *
-   * data is char* [aid length][aid][payload length][payload]
+   * data is char*
+   * [origin type][origin number][aid length][aid][payload length][payload]
    */
   NFC_NOTIFICATION_TRANSACTION_EVENT = 2003,
 } NfcNotificationType;
+
+typedef enum {
+  /**
+   * NFC_EVT_TRANSACTION_SIM 
+   *
+   * EVT_TRANSACTION is notified from SIM card.
+   */
+  NFC_EVT_TRANSACTION_SIM = 0,
+
+  /**
+   * NFC_EVT_TRANSACTION_ESE
+   *
+   * EVT_TRANSACTION is notified from embedded secure element.
+   */
+  NFC_EVT_TRANSACTION_ESE,
+
+  /**
+   * NFC_EVT_TRANSACTION_EXTERNAL
+   *
+   * EVT_TRANSACTION is notified from external device, ex. SDcard.
+   */
+  NFC_EVT_TRANSACTION_EXTERNAL,
+
+  /**
+   * NFC_EVT_TRANSACTION_UNKNOWN
+   *
+   * EVT_TRANSACTION is notified from an unknown component
+   */
+  NFC_EVT_TRANSACTION_UNKNOWN,
+} NfcEvtTransactionOrigin;
 
 #ifdef __cplusplus
 }

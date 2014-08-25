@@ -65,6 +65,8 @@ TransactionEvent::TransactionEvent()
  , aid(NULL)
  , payloadLen(0)
  , payload(NULL)
+ , aidOriginLen(0)
+ , aidOrigin(NULL)
 {
 }
 
@@ -72,4 +74,5 @@ TransactionEvent::~TransactionEvent()
 {
   delete aid;
   delete payload;
+  delete aidOrigin;
 }

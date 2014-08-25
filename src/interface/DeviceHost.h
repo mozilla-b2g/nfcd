@@ -92,5 +92,8 @@ public:
 
   uint32_t payloadLen;
   uint8_t* payload;
+
+  uint32_t aidOriginLen;
+  uint8_t* aidOrigin;
 };
 #endif

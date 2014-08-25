@@ -359,6 +359,11 @@ bool SecureElement::deactivate()
 void SecureElement::notifyTransactionEvent(const uint8_t* aid, uint32_t aidLen,
                                            const uint8_t* payload, uint32_t payloadLen)
 {
+  // TODO: For now, we dodn't have a solution to get aid origin from nfcd.
+  //       So use SIM1 as dfault value.
+  const char* aidOrigin = "SIM1";
+  int32_t aidOriginLen = strlen(aidOrigin);
+
   if (aidLen == 0) {
     return;
   }
@@ -372,6 +377,10 @@ void SecureElement::notifyTransactionEvent(const uint8_t* aid, uint32_t aidLen,
   pTransaction->payloadLen = payloadLen;
   pTransaction->payload = new uint8_t[payloadLen];
   memcpy(pTransaction->payload, payload, payloadLen);
+
+  pTransaction->aidOriginLen = aidOriginLen;
+  pTransaction->aidOrigin = new uint8_t[aidOriginLen];
+  memcpy(pTransaction->aidOrigin, aidOrigin, aidOriginLen);
 
   mNfcManager->notifyTransactionEvent(pTransaction);
 }

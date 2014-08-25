@@ -25,7 +25,7 @@
 #include "NfcDebug.h"
 
 #define MAJOR_VERSION (1)
-#define MINOR_VERSION (7)
+#define MINOR_VERSION (8)
 
 using android::Parcel;
 
@@ -71,6 +71,10 @@ void MessageHandler::notifyTransactionEvent(Parcel& parcel, void* data)
   parcel.writeInt32(event->payloadLen);
   void* payload = parcel.writeInplace(event->payloadLen);
   memcpy(payload, event->payload, event->payloadLen);
+
+  parcel.writeInt32(event->aidOriginLen);
+  void* aidOrigin = parcel.writeInplace(event->aidOriginLen);
+  memcpy(aidOrigin, event->aidOrigin, event->aidOriginLen);
 
   sendResponse(parcel);
 

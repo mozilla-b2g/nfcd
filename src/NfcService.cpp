@@ -88,7 +88,7 @@ NfcManager* NfcService::sNfcManager = NULL;
 
 NfcService::NfcService()
  : mState(STATE_NFC_OFF)
- , mTagCount(0)
+ , mTagPresence(false)
 {
   mP2pLinkManager = new P2pLinkManager(this);
 }
@@ -256,15 +256,13 @@ static void *pollingThreadFunc(void *arg)
   INfcTag* pINfcTag = param->pINfcTag;
   int sessionId = param->sessionId;
 
-  NfcService::Instance()->increaseTagCount();
+  NfcService::Instance()->tagDetected();
 
-  // TODO : check if check tag presence here is correct
-  // For android. it use startPresenceChecking API in INfcTag.java
   while (pINfcTag->presenceCheck()) {
     sleep(1);
   }
 
-  NfcService::Instance()->decreaseTagCount();
+  NfcService::Instance()->tagRemoved();
 
   pINfcTag->disconnect();
 
@@ -277,6 +275,11 @@ static void *pollingThreadFunc(void *arg)
 
 void NfcService::handleTagDiscovered(NfcEvent* event)
 {
+  // Do not support multiple tag discover.
+  if (isTagPresence()) {
+    return;
+  }
+
   INfcTag* pINfcTag = reinterpret_cast<INfcTag*>(event->obj);
 
   // To get complete tag information, need to call read ndef first.
@@ -507,7 +510,7 @@ void NfcService::handleWriteNdefResponse(NfcEvent* event)
   // nfcd check current connection is p2p or tag.
   if (mP2pLinkManager->isLlcpActive()) {
     mP2pLinkManager->push(*pNdef.get());
-  } else if (isTagConnected()) {
+  } else if (isTagPresence()) {
     INfcTag* pINfcTag = reinterpret_cast<INfcTag*>
                         (sNfcManager->queryInterface(INTERFACE_TAG_MANAGER));
 

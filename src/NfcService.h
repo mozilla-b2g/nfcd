@@ -79,9 +79,9 @@ public:
   NfcErrorCode enableNfc();
   NfcErrorCode disableNfc();
 
-  void increaseTagCount() { mTagCount++; }
-  void decreaseTagCount() { mTagCount--; }
-  bool isTagConnected()   { return mTagCount > 0; }
+  void tagDetected()    { mTagPresence = true; }
+  void tagRemoved()     { mTagPresence = false; }
+  bool isTagPresence()  { return mTagPresence; }
 
 private:
   NfcService();
@@ -91,7 +91,7 @@ private:
   NfcErrorCode disableSE();
 
   uint32_t mState;
-  uint8_t mTagCount;
+  bool mTagPresence;
   static NfcService* sInstance;
   static NfcManager* sNfcManager;
   android::List<NfcEvent*> mQueue;

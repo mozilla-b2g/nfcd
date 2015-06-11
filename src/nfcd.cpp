@@ -33,9 +33,11 @@ static const char* DEFAULT_SOCKET_NAME = NULL; /* creates a listen socket */
 
 struct Options {
   const char* mSocketName;
+  bool mSeqPacket;
 
   Options()
     : mSocketName(DEFAULT_SOCKET_NAME)
+    , mSeqPacket(false)
   { }
 
   int Parse(int aArgc, char* aArgv[])
@@ -45,7 +47,7 @@ struct Options {
     opterr = 0; /* no default error messages from getopt */
 
     do {
-      int c = getopt(aArgc, aArgv, "a:h");
+      int c = getopt(aArgc, aArgv, "a:hS");
 
       if (c < 0) {
         break; /* end of options */
@@ -56,6 +58,9 @@ struct Options {
           break;
         case 'h':
           res = ParseOpt_h(c, optarg);
+          break;
+        case 'S':
+          res = ParseOpt_S(c, optarg);
           break;
         case '?':
           res = ParseOpt_QuestionMark(c, optarg);
@@ -95,12 +100,20 @@ private:
            "\n"
            "Networking:\n"
            "  -a    the network address\n"
+           "  -S    use socket type SOCK_SEQPACKET\n"
            "\n"
            "The only supported address family is AF_UNIX with abstract\n"
            "names. Not setting a network address will create a listen\n"
            "socket.\n");
 
     return 1;
+  }
+
+  int ParseOpt_S(int aC, char* aArg)
+  {
+    mSeqPacket = true;
+
+    return 0;
   }
 
   int ParseOpt_QuestionMark(int aC, char* aArg)
@@ -144,7 +157,7 @@ int main(int argc, char* argv[]) {
   socket->Initialize(msgHandler);
   socket->SetSocketListener(service);
   msgHandler->SetOutgoingSocket(socket);
-  socket->Loop(options.mSocketName);
+  socket->Loop(options.mSocketName, options.mSeqPacket);
 
   //TODO delete NfcIpcSocket, NfcService
   delete msgHandler;

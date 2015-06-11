@@ -90,7 +90,7 @@ int NfcIpcSocket::GetListenSocket() {
   return nfcdConn;
 }
 
-int NfcIpcSocket::GetConnectedSocket(const char* aSocketName)
+int NfcIpcSocket::GetConnectedSocket(const char* aSocketName, bool aSeqPacket)
 {
   static const size_t NBOUNDS = 2; // respect leading and trailing '\0'
 
@@ -112,7 +112,7 @@ int NfcIpcSocket::GetConnectedSocket(const char* aSocketName)
   memcpy(addr.sun_path + 1, aSocketName, len + 1);
   socklen_t addrLen = offsetof(struct sockaddr_un, sun_path) + siz;
 
-  int nfcdRw = socket(AF_UNIX, SOCK_STREAM, 0);
+  int nfcdRw = socket(AF_UNIX, aSeqPacket ? SOCK_SEQPACKET : SOCK_STREAM, 0);
   if (nfcdRw < 0) {
     NFCD_ERROR("Could not create %s socket: %s\n", aSocketName, strerror(errno));
     return -1;
@@ -133,7 +133,7 @@ void NfcIpcSocket::SetSocketListener(IpcSocketListener* aListener) {
   mListener = aListener;
 }
 
-void NfcIpcSocket::Loop(const char* aSocketName)
+void NfcIpcSocket::Loop(const char* aSocketName, bool aSeqPacket)
 {
   bool connected = false;
   int nfcdConn = -1;
@@ -149,7 +149,7 @@ void NfcIpcSocket::Loop(const char* aSocketName)
       if (aSocketName == reinterpret_cast<const char*>(uintptr_t(-1))) {
         break; /* connected before; return */
       }
-      mNfcdRw = GetConnectedSocket(aSocketName);
+      mNfcdRw = GetConnectedSocket(aSocketName, aSeqPacket);
       if (mNfcdRw < 0) {
         break; /* no connection; return */
       }

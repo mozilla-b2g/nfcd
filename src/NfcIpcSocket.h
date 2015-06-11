@@ -33,7 +33,7 @@ public:
 
   static NfcIpcSocket* Instance();
   void Initialize(MessageHandler* aMsgHandler);
-  void Loop(const char* aSocketName);
+  void Loop(const char* aSocketName, bool aSeqPacket);
 
   void SetSocketListener(IpcSocketListener* alistener);
 
@@ -52,7 +52,7 @@ private:
 
   void InitSocket();
   int GetListenSocket();
-  int GetConnectedSocket(const char* aSocketName);
+  int GetConnectedSocket(const char* aSocketName, bool aSeqPacket);
 };
 
 #endif // mozilla_nfcd_NfcIpcSocket_h
